@@ -4,7 +4,7 @@ from . import views
 
 urlpatterns = [
 
-    path("", views.registerUser, name="register-user"),
+    path("registeruser", views.registerUser, name="register-user"),
 
     path("users/", views.getUsers, name="get-users"),
 
@@ -19,6 +19,8 @@ urlpatterns = [
     path("todos/<str:pk>/update", views.updateTodo, name="update-todo"),
 
     path("todos/<str:pk>/delete", views.deleteTodo, name="delete-todo"),
+
+    path("users/<str:pk>/todos", views.getUserTodos, name="get-user-todos")
 ]
 
     

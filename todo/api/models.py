@@ -12,7 +12,7 @@ class Todo(models.Model):
     created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.body[0:50]
+        return self.title
     
 
 
@@ -24,4 +24,4 @@ class User(models.Model):
 
     
     def __str__(self):
-        return self.body[0:50]
+        return self.userid

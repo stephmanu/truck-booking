@@ -106,9 +106,19 @@ def deleteTodo(request, pk):
 
 
 # List all todos of a user
-#@api_view('GET')
-#def getUserTodos(request, pk):
-#    todos = Todo.objects.all()
-#    for todo in todos:
-#        if User.objects.get(id == pk):
-#            getUserTodos[] = User.objects.add
+@api_view(['GET'])
+def getUserTodos(request, pk):
+    user = get_object_or_404(User, id=pk)
+
+    user_todos = []
+
+    todos = Todo.objects.all()
+    
+    for todo in todos:
+        if todo.user == user:
+            user_todos.append(todo)
+
+    print(user_todos)
+
+    serializer = TodoSerializer(user_todos, many=True)
+    return Response(serializer.data)
