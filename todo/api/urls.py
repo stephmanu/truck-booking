@@ -1,5 +1,23 @@
 from django.urls import path
 from . import views
+from django.urls import re_path
+from rest_framework import permissions
+from drf_yasg.views import get_schema_view
+from drf_yasg import openapi
+
+
+schema_view = get_schema_view(
+   openapi.Info(
+      title="Django todo API",
+      default_version='v1',
+      description="Django CRUD todo api documentation",
+      terms_of_service="https://www.google.com/policies/terms/",
+      contact=openapi.Contact(email="macmanustephen@gmail.com"),
+      license=openapi.License(name="BSD License"),
+   ),
+   public=True,
+   permission_classes=(permissions.AllowAny,),
+)
 
 
 urlpatterns = [
@@ -20,7 +38,10 @@ urlpatterns = [
 
     path("todos/<str:pk>/delete", views.deleteTodo, name="delete-todo"),
 
-    path("users/<str:pk>/todos", views.getUserTodos, name="get-user-todos")
+    path("users/<str:pk>/todos", views.getUserTodos, name="get-user-todos"),
+
+    path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+    
 ]
 
     
