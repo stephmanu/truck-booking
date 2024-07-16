@@ -3,24 +3,18 @@ from django.shortcuts import get_object_or_404, render
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from django.contrib.auth.models import User
-from rest_framework.permissions import IsAdminUser
+from rest_framework import generics
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from .models import Todo
 from .serializers import TodoSerializer, UserSerializer
 
 # Create your views here.
 
-# Register users to db
-@api_view(['POST'])
-def registerUser(request):
-
-    data = request.data
-    user = User.objects.create(
-        username = data['username'],
-        email = data['email'],
-        password = data['password']
-    )
-    serializer = UserSerializer(user, many=False)
-    return Response(serializer.data)
+# Register new user
+class registerUserView(generics.CreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [AllowAny]
 
 
 

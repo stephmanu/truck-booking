@@ -1,9 +1,12 @@
-from django.urls import path
+from django.urls import include, path
 from . import views
 from django.urls import re_path
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
+
+from api.views import registerUserView
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 
 schema_view = get_schema_view(
@@ -22,25 +25,31 @@ schema_view = get_schema_view(
 
 urlpatterns = [
 
-    path("registeruser", views.registerUser, name="register-user"),
+    path("api/v1/user/register/", views.registerUserView.as_view(), name="register-user"),
 
-    path("users/", views.getUsers, name="get-users"),
+    path("api/v1/token", TokenObtainPairView.as_view(), name="get-token"),
+    
+    path("api/v1/token/refresh", TokenRefreshView.as_view(), name="get-token"),
 
-    path("users/<str:pk>", views.getUser, name="get-user"),
+    path("api-auth/", include("rest_framework.urls")),
 
-    path("createtodo/", views.createTodo, name="create-todo"),
+    path("api/v1/users/", views.getUsers, name="get-users"),
 
-    path("todos/", views.getTodos, name="get-todos"),
+    path("api/v1/users/<str:pk>", views.getUser, name="get-user"),
 
-    path("todos/<str:pk>", views.getTodo, name="get-todo"),
+    path("api/v1/createtodo/", views.createTodo, name="create-todo"),
 
-    path("todos/<str:pk>/update", views.updateTodo, name="update-todo"),
+    path("api/v1/todos/", views.getTodos, name="get-todos"),
 
-    path("todos/<str:pk>/delete", views.deleteTodo, name="delete-todo"),
+    path("api/v1/todos/<str:pk>", views.getTodo, name="get-todo"),
 
-    path("users/<str:pk>/todos", views.getUserTodos, name="get-user-todos"),
+    path("api/v1/todos/<str:pk>/update", views.updateTodo, name="update-todo"),
 
-    path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+    path("api/v1/todos/<str:pk>/delete", views.deleteTodo, name="delete-todo"),
+
+    path("api/v1/users/<str:pk>/todos", views.getUserTodos, name="get-user-todos"),
+
+    path('api/v1/swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     
 ]
 
