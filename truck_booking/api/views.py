@@ -1,8 +1,9 @@
 from django.shortcuts import render
-from . serializers import UserSerializer
+from . serializers import UserSerializer, TruckSerializer
+from .models import Truck
 from rest_framework.response import Response
 from django.contrib.auth.models import User
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 from rest_framework import generics
 from django.contrib.auth.views import LoginView
 
@@ -69,7 +70,6 @@ class PasswordResetCompletetView(TemplateView):
 
 
 
-
 # User home view
 class userHomeView(TemplateView):
     template_name = 'home.html'
@@ -78,4 +78,25 @@ class userHomeView(TemplateView):
         context = super().get_context_data(**kwargs)
         context['user'] = self.request.user
         return context
+    
+
+# Register new truck
+class registerTruckView(generics.CreateAPIView):
+    queryset = Truck.objects.all()
+    serializer_class = TruckSerializer
+    permission_classes = [IsAdminUser]
+
+
+# view all trucks
+class viewAllTrucksView(generics.ListAPIView):
+    queryset = Truck.objects.all()
+    serializer_class = TruckSerializer
+    permission_classes = [IsAuthenticated]
+    def get_queryset(self):
+        queryset = Truck.objects.all()
+        return queryset
+    def get(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = TruckSerializer(queryset, many=True)
+        return Response(serializer.data)
     

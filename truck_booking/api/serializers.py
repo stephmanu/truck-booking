@@ -1,9 +1,7 @@
 from rest_framework.serializers import ModelSerializer
 
 from django.contrib.auth.models import User
-
-
-
+from .models import Truck
 
 
 class UserSerializer(ModelSerializer):
@@ -17,3 +15,15 @@ class UserSerializer(ModelSerializer):
         def create(self, validated_data):
             user = User.objects.create_user(**validated_data)
             return user
+        
+
+# Truck serializer
+class TruckSerializer(ModelSerializer):
+    class Meta:
+        model = Truck
+        fields = ['Asset_Tag', 'Truck_ID', 'Truck_Model', 'ECM_Type', 'status', 'comment']
+
+
+        def create(self, validated_data):
+            truck = Truck.objects.create(**validated_data)
+            return truck

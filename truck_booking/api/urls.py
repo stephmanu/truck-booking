@@ -46,6 +46,10 @@ urlpatterns = [
     path('password_reset/done/', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),
     
     path('api/v1/swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+
+    path("api/user/add_truck/", views.registerTruckView.as_view(), name="register-truck"),
+
+    path("api/user/truck_list", views.viewAllTrucksView.as_view(), name='view-all-trucks')
     
 ]
 
