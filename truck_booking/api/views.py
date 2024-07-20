@@ -1,16 +1,17 @@
 from django.shortcuts import render
-from . serializers import UserSerializer, TruckSerializer
+from . serializers import UserSerializer, TruckSerializer, EditTruckSerializer
 from .models import Truck
 from rest_framework.response import Response
 from django.contrib.auth.models import User
 from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 from rest_framework import generics
 from django.contrib.auth.views import LoginView
-
+from django.views.generic.detail import DetailView
 from django.shortcuts import redirect
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView
-
+from rest_framework import status
+from rest_framework.mixins import UpdateModelMixin, DestroyModelMixin
 
 from django.contrib.auth.forms import (
     AuthenticationForm,
@@ -85,6 +86,39 @@ class registerTruckView(generics.CreateAPIView):
     queryset = Truck.objects.all()
     serializer_class = TruckSerializer
     permission_classes = [IsAdminUser]
+
+
+
+# edit truck details
+class EditTruckView(generics.RetrieveAPIView, UpdateModelMixin):
+    queryset = Truck.objects.all()
+    serializer_class = EditTruckSerializer
+    permission_classes = [IsAdminUser]
+    
+
+    def put(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
+#
+#        truck = Truck.objects.get(id=pk)
+#        serializer = EditTruckSerializer(truck, data=request.data)
+#        if serializer.is_valid():
+#            serializer.save()
+#            return Response(serializer.data)
+#        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#    
+
+# delete truck 
+class DeleteTruckView(generics.RetrieveAPIView, DestroyModelMixin):
+    queryset = Truck.objects.all()
+    serializer_class = EditTruckSerializer
+    permission_classes = [IsAdminUser]
+    
+    def delete(self, request, pk):
+        truck = Truck.objects.get(id=pk)
+        truck.delete()
+        return Response('Truck deleted successfully')
+    
+
 
 
 # view all trucks

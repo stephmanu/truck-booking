@@ -27,3 +27,14 @@ class TruckSerializer(ModelSerializer):
         def create(self, validated_data):
             truck = Truck.objects.create(**validated_data)
             return truck
+
+
+class EditTruckSerializer(ModelSerializer):
+    class Meta:
+        model = Truck
+        fields = ['Asset_Tag', 'Truck_ID', 'Truck_Model', 'ECM_Type', 'status', 'comment']
+
+        extra_kwargs = {"Asset_Tag": {"required": False}, "Truck_ID": {"required": False}, 
+                        "Truck_Model": {"required": False}, "ECM_Type": {"required": False}, 
+                        "status": {"required": False}, "comment": {"required": False}}
+        #extra_kwargs = {}

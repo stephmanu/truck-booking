@@ -49,7 +49,12 @@ urlpatterns = [
 
     path("api/user/add_truck/", views.registerTruckView.as_view(), name="register-truck"),
 
-    path("api/user/truck_list", views.viewAllTrucksView.as_view(), name='view-all-trucks')
+    path("api/user/trucks", views.viewAllTrucksView.as_view(), name='view-all-trucks'),
+
+    path("api/user/trucks/<str:pk>/edit", views.EditTruckView.as_view(), name='edit-truck'),
+
+    path("api/user/trucks/<str:pk>/delete", views.DeleteTruckView.as_view(), name='delete-truck'),
+    
     
 ]
 
