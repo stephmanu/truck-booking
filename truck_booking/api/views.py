@@ -1,6 +1,7 @@
+from urllib import request
 from django.shortcuts import render
-from . serializers import UserSerializer, TruckSerializer, EditTruckSerializer
-from .models import Truck
+from . serializers import UserSerializer, TruckSerializer, EditTruckSerializer, TruckBookingSerializer
+from .models import Truck, TruckBooking
 from rest_framework.response import Response
 from django.contrib.auth.models import User
 from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
@@ -13,11 +14,13 @@ from django.views.generic.edit import FormView
 from rest_framework import status
 from rest_framework.mixins import UpdateModelMixin, DestroyModelMixin
 
+from schedule.models import Calendar, Event
+from datetime import datetime, timedelta, timezone
+
 from django.contrib.auth.forms import (
     AuthenticationForm,
     PasswordChangeForm,
     PasswordResetForm,
-    SetPasswordForm,
 )
 
 # Create your views here.
@@ -98,14 +101,8 @@ class EditTruckView(generics.RetrieveAPIView, UpdateModelMixin):
 
     def put(self, request, *args, **kwargs):
         return self.update(request, *args, **kwargs)
-#
-#        truck = Truck.objects.get(id=pk)
-#        serializer = EditTruckSerializer(truck, data=request.data)
-#        if serializer.is_valid():
-#            serializer.save()
-#            return Response(serializer.data)
-#        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-#    
+
+
 
 # delete truck 
 class DeleteTruckView(generics.RetrieveAPIView, DestroyModelMixin):
@@ -113,12 +110,12 @@ class DeleteTruckView(generics.RetrieveAPIView, DestroyModelMixin):
     serializer_class = EditTruckSerializer
     permission_classes = [IsAdminUser]
     
+
     def delete(self, request, pk):
         truck = Truck.objects.get(id=pk)
         truck.delete()
         return Response('Truck deleted successfully')
     
-
 
 
 # view all trucks
@@ -134,3 +131,100 @@ class viewAllTrucksView(generics.ListAPIView):
         serializer = TruckSerializer(queryset, many=True)
         return Response(serializer.data)
     
+
+
+# view truck bookings
+class TruckBookings(generics.ListAPIView):
+
+    #queryset = TruckBooking.objects.all()
+    serializer_class = TruckBookingSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        if self.request.user.is_staff or self.request.user.is_superuser:
+            return TruckBooking.objects.all()
+        return TruckBooking.objects.filter(User=self.request.user)
+
+    
+
+
+# create new booking
+class registerTruckBookingView(generics.CreateAPIView):
+    queryset = TruckBooking.objects.all()
+    serializer_class = TruckBookingSerializer
+    permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        serializer.save(User=self.request.user)
+
+        return redirect('api/user/truck_bookings/')
+    
+
+
+
+# editting a booking
+class EditTruckBookingView(generics.RetrieveAPIView, UpdateModelMixin):
+    queryset = TruckBooking.objects.all()
+    serializer_class = TruckBookingSerializer
+    permission_classes = [IsAuthenticated]
+    
+
+    def put(self, request, *args, **kwargs):
+
+        pk = self.kwargs.get('pk')
+
+        booking = TruckBooking.objects.get(id=pk)
+
+        if booking.User == self.request.user or self.request.user.is_superuser or self.request.user.is_staff:
+           
+            return self.update(request, *args, **kwargs) 
+
+        return Response("You are not authorised to perform this action.")
+
+
+# delete truckbooking
+class DeleteTruckBookingView(generics.RetrieveAPIView, DestroyModelMixin):
+    queryset = TruckBooking.objects.all()
+    serializer_class = EditTruckSerializer
+    permission_classes = [IsAuthenticated]
+    
+
+    def delete(self, request, pk):
+        booking = TruckBooking.objects.get(id=pk)
+
+        if booking.User == self.request.user or self.request.user.is_superuser:
+            booking.delete()
+            return Response('Booking deleted successfully')
+        
+       
+        return Response("You are not authorised to perform this action.")
+    
+
+
+# calender view of all bookings
+class TruckBookingsCalendarView(TemplateView):
+    template_name = 'schedule/calendar.html'
+
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        calendar = Calendar.objects.get(name='Truck Bookings')
+
+        # Create Event instances for each TruckBooking
+        for booking in TruckBooking.objects.all():
+            start_datetime = datetime.combine(booking.Date, booking.From_Time)
+            end_datetime = datetime.combine(booking.Date, booking.To_Time)
+            
+            # Convert to timezone-aware datetimes
+            start_datetime_aware = timezone.make_aware(start_datetime, timezone.get_current_timezone())
+            end_datetime_aware = timezone.make_aware(end_datetime, timezone.get_current_timezone())
+            
+            Event.objects.get_or_create(
+                title=f'Truck {booking.Truck_ID}',
+                start=start_datetime_aware,
+                end=end_datetime_aware,
+                calendar=calendar
+            )
+
+        context['calendar'] = calendar
+        return context

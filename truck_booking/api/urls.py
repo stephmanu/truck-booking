@@ -47,13 +47,26 @@ urlpatterns = [
     
     path('api/v1/swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
 
-    path("api/user/add_truck/", views.registerTruckView.as_view(), name="register-truck"),
+    path("api/user/truck_config/add_truck/", views.registerTruckView.as_view(), name="register-truck"),
 
-    path("api/user/trucks", views.viewAllTrucksView.as_view(), name='view-all-trucks'),
+    path("api/user/truck_config/", views.viewAllTrucksView.as_view(), name='view-all-trucks'),
 
-    path("api/user/trucks/<str:pk>/edit", views.EditTruckView.as_view(), name='edit-truck'),
+    path("api/user/truck_config/<str:pk>/edit", views.EditTruckView.as_view(), name='edit-truck'),
 
-    path("api/user/trucks/<str:pk>/delete", views.DeleteTruckView.as_view(), name='delete-truck'),
+    path("api/user/truck_config/<str:pk>/delete", views.DeleteTruckView.as_view(), name='delete-truck'),
+
+    path("api/user/truck_bookings/", views.TruckBookings.as_view(), name='booking-list'),
+
+    path('api/user/truck_bookings/create/', views.registerTruckBookingView.as_view(), name='create-new-booking'),
+
+    path("api/user/truck_bookings/<str:pk>/edit", views.EditTruckBookingView.as_view(), name='edit-truckbooking'),
+
+    path("api/user/truck_bookings/<str:pk>/delete", views.DeleteTruckBookingView.as_view(), name='delete-truckbooking'),
+
+    path('api/user/schedule/', include('schedule.urls')),
+
+    path('api/user/calendar/', views.TruckBookingsCalendarView.as_view(), name='truck-bookings-calendar'),
+
     
     
 ]

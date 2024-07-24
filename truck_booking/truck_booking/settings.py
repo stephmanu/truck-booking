@@ -42,15 +42,16 @@ INSTALLED_APPS = [
     'api.apps.ApiConfig',
     'rest_framework.authtoken',
     'rest_framework',
-
+    'datetimepicker',
     'drf_yasg',
-
+    'schedule',
     'rest_framework_simplejwt.token_blacklist',
 ]
 
 
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
 
 
 
