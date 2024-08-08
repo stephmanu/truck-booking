@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
+import os
 from pathlib import Path
 from datetime import timedelta
 
@@ -38,7 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
+    'calendarapp.apps.CalendarappConfig',
     'api.apps.ApiConfig',
     'rest_framework.authtoken',
     'rest_framework',
@@ -46,13 +47,12 @@ INSTALLED_APPS = [
     'drf_yasg',
     'schedule',
     'rest_framework_simplejwt.token_blacklist',
+
 ]
 
 
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-
-
 
 
 MIDDLEWARE = [
@@ -193,6 +193,30 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+#STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+    #os.path.join(BASE_DIR, 'components'),
+]
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media/') # 'data' is my media folder
+MEDIA_URL = '/media/'
+
+#STATICFILES_FINDERS = [
+#    'djangobower.finders.BowerFinder',
+#]
+#
+#
+#BOWER_COMPONENTS_ROOT = os.path.join(BASE_DIR, 'components')
+#
+#BOWER_INSTALLED_APPS = (
+#    'jquery#3.7.1',
+#    'jquery-ui',
+#    'bootstrap'
+#)
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field

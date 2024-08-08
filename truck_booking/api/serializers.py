@@ -48,15 +48,10 @@ class TruckBookingSerializer(ModelSerializer):
 
         model = TruckBooking
 
-        fields = ['Truck_ID', 'Date', 'From_Time', 'To_Time']
+        fields = ['Truck', 'Date', 'From_Time', 'To_Time']
 
         widgets = {'Date':  forms.DateInput(attrs={'type': 'date', 'placeholder': 'dd-mm-yyyy', 'class': 'form-control'}),
                    'From_Time':  forms.TextInput(attrs={'type': 'time', 'class': 'form-control'}),
                    'To_Time':  forms.TextInput(attrs={'type': 'time', 'class': 'form-control'})}
         
-        #extra_kwargs = {"Truck_ID": {"required": False}}
-
-
-        #def create(self, validated_data):
-        #    truckBooking = TruckBooking.objects.create(**validated_data)
-        #    return truckBooking
+        

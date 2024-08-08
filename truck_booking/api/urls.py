@@ -1,6 +1,5 @@
 from django.urls import include, path
 from . import views
-from django.urls import re_path
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
@@ -63,12 +62,6 @@ urlpatterns = [
 
     path("api/user/truck_bookings/<str:pk>/delete", views.DeleteTruckBookingView.as_view(), name='delete-truckbooking'),
 
-    path('api/user/schedule/', include('schedule.urls')),
-
-    path('api/user/calendar/', views.TruckBookingsCalendarView.as_view(), name='truck-bookings-calendar'),
-
-    
-    
 ]
 
     

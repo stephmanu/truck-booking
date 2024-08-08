@@ -1,21 +1,15 @@
-from urllib import request
-from django.shortcuts import render
 from . serializers import UserSerializer, TruckSerializer, EditTruckSerializer, TruckBookingSerializer
 from .models import Truck, TruckBooking
+
 from rest_framework.response import Response
 from django.contrib.auth.models import User
 from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 from rest_framework import generics
 from django.contrib.auth.views import LoginView
-from django.views.generic.detail import DetailView
 from django.shortcuts import redirect
 from django.views.generic.base import TemplateView
-from django.views.generic.edit import FormView
-from rest_framework import status
 from rest_framework.mixins import UpdateModelMixin, DestroyModelMixin
 
-from schedule.models import Calendar, Event
-from datetime import datetime, timedelta, timezone
 
 from django.contrib.auth.forms import (
     AuthenticationForm,
@@ -200,31 +194,3 @@ class DeleteTruckBookingView(generics.RetrieveAPIView, DestroyModelMixin):
         return Response("You are not authorised to perform this action.")
     
 
-
-# calender view of all bookings
-class TruckBookingsCalendarView(TemplateView):
-    template_name = 'schedule/calendar.html'
-
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        calendar = Calendar.objects.get(name='Truck Bookings')
-
-        # Create Event instances for each TruckBooking
-        for booking in TruckBooking.objects.all():
-            start_datetime = datetime.combine(booking.Date, booking.From_Time)
-            end_datetime = datetime.combine(booking.Date, booking.To_Time)
-            
-            # Convert to timezone-aware datetimes
-            start_datetime_aware = timezone.make_aware(start_datetime, timezone.get_current_timezone())
-            end_datetime_aware = timezone.make_aware(end_datetime, timezone.get_current_timezone())
-            
-            Event.objects.get_or_create(
-                title=f'Truck {booking.Truck_ID}',
-                start=start_datetime_aware,
-                end=end_datetime_aware,
-                calendar=calendar
-            )
-
-        context['calendar'] = calendar
-        return context
